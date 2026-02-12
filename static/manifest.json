@@ -1,0 +1,45 @@
+{
+    "name": "Flow",
+    "short_name": "Flow",
+    "start_url": "/",
+    "display": "standalone",
+    "background_color": "#0a1538",
+    "theme_color": "#3B82F6",
+    "description": "A modern expense tracker built with SvelteKit, designed to help you effortlessly manage your finances..",
+    "icons": [
+        {
+            "src": "/pwa-64x64.png",
+            "sizes": "64x64",
+            "type": "image/png"
+        },
+        {
+            "src": "/pwa-192x192.png",
+            "sizes": "192x192",
+            "type": "image/png"
+        },
+        {
+            "src": "/pwa-512x512.png",
+            "sizes": "512x512",
+            "type": "image/png"
+        }
+
+    ],
+
+     "screenshots": [
+        {
+        "src": "/screenshot-desktop.png",
+        "sizes": "1280x720",
+        "type": "image/png",
+        "form_factor": "wide",
+        "label": "Flow Dashboard on Desktop"
+        },
+        {
+        "src": "/screenshot-mobile.png",
+        "sizes": "375x667",
+        "type": "image/png",
+        "form_factor": "narrow",
+        "label": "Flow Dashboard on Mobile"
+        }
+    ]
+}
+    
