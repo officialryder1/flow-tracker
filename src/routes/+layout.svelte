@@ -1,6 +1,5 @@
 <script lang="ts">
 	import './layout.css';
-	import favicon from '$lib/assets/favicon.svg';
 	import { Toaster } from 'svelte-sonner';
 	import { ModeWatcher } from "mode-watcher";
 	import { onMount } from 'svelte';
@@ -42,7 +41,6 @@
 	}
 </script>
 
-<svelte:head><link rel="icon" href={favicon} /></svelte:head>
 
 <ModeWatcher />
 {#if mounted}
