@@ -5,7 +5,7 @@
 	import { onMount } from 'svelte';
 	import { dev, browser} from '$app/environment';
 	import { Zap } from "@lucide/svelte";
-	import CurrencySwitcher from '$lib/components/CurrencySwitcher.svelte';
+	
 	import PWAInstallPrompt from '$lib/components/PWAInstallPrompt.svelte';
 
 	
@@ -73,7 +73,7 @@
 			</div>
 		{/if}
 		<div class="absolute top-4 right-4 flex items-center gap-3">
-			<CurrencySwitcher />
+			
 		</div>
 		<PWAInstallPrompt showDelay={3000} autoClose={true} />
 		{@render children()}

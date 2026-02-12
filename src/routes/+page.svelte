@@ -6,7 +6,7 @@
   import { Tabs, TabsContent, TabsList, TabsTrigger } from "$lib/components/ui/tabs";
   import CategoryManager from "$lib/components/CategoryManager.svelte";
   import { Wallet, TrendingUp, PieChart, Settings, Sparkles } from "@lucide/svelte";
-  import { page } from "$app/stores";
+  
   
   let activeTab = "overview";
 </script>
@@ -43,12 +43,14 @@
 
   <!-- Main Grid -->
   <div class="grid gap-8 lg:grid-cols-12">
+
     <!-- Left Column - Quick Add -->
     <div class="lg:col-span-4 space-y-6">
       <div class="sticky top-6">
         <div class="relative group">
           <div class="absolute -inset-1 bg-gradient-to-r from-blue-500 to-purple-600 rounded-2xl blur opacity-25 group-hover:opacity-40 transition duration-1000"></div>
           <div class="relative bg-white dark:bg-slate-900 rounded-2xl shadow-xl border border-slate-200 dark:border-slate-800">
+
             <ExpenseForm />
           </div>
         </div>

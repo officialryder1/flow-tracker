@@ -7,6 +7,7 @@
   import { categories } from "$lib/store/expenseStore";  
   import { currencyConfig, convertToUSD } from "$lib/store/currencyStore"; 
   import { DollarSign, Receipt, Plus } from "@lucide/svelte"; 
+  import CurrencySwitcher from '$lib/components/CurrencySwitcher.svelte';
 
   let amount = "";
   let description = "";
@@ -41,13 +42,16 @@
 </script>
 
 <div class="space-y-6 p-6">
-  <div class="flex items-center gap-3 pb-4 border-b border-slate-200 dark:border-slate-800">
+  <div class="flex items-center gap-4 pb-4 border-b border-slate-200 dark:border-slate-800">
     <div class="p-2.5 rounded-xl bg-gradient-to-br from-blue-500 to-purple-600 shadow-lg shadow-blue-500/20">
       <Receipt class="w-5 h-5 text-white" />
     </div>
     <div>
       <h2 class="text-lg font-semibold">Quick Add</h2>
       <p class="text-xs text-muted-foreground">Record an expense instantly</p>
+    </div>
+    <div class="ml-auto">
+      <CurrencySwitcher />
     </div>
   </div>
   
