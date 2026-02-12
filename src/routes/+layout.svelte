@@ -5,6 +5,7 @@
 	import { onMount } from 'svelte';
 	import { dev, browser} from '$app/environment';
 	import { Zap } from "@lucide/svelte";
+	import { page } from '$app/stores';
 	
 	import PWAInstallPrompt from '$lib/components/PWAInstallPrompt.svelte';
 
@@ -40,6 +41,67 @@
 		window.location.reload();
 	}
 </script>
+
+<svelte:head>
+	<title>Flow - Financial Intelligence</title>
+	<meta name="description" content="Track your spending, understand your habits, and achieve your financial goals with Flow. Simple, beautiful, and intelligent expense tracking." />
+	<meta name="keywords" content="finance tracker, expense manager, expense tracker, budget app, money management, personal finance, spending tracker, naira, dollar" />
+	<meta name="author" content="RyderTech" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<meta name="language" content="English" />
+	<meta name="revisit-after" content="7 days" />
+	<meta name="robots" content="index, follow" />
+
+	 <!-- Canonical URL -->
+  	<link rel="canonical" href={$page.url.href} />
+
+	<!-- Open Graph / Facebook -->
+	<meta property="og:type" content="website" />
+	<meta property="og:url" content={$page.url.href} />
+	<meta property="og:title" content="Flow - Financial Intelligence" />
+	<meta property="og:description" content="Track your spending, understand your habits, and achieve your financial goals with Flow. Simple, beautiful, and intelligent expense tracking." />
+	<meta property="og:image" content="/logo.png" />
+	<meta property="og:site_name" content="Flow" />
+	<meta property="og:locale" content="en_US" />
+
+	<!-- Twitter -->
+	<meta property="twitter:card" content="summary_large_image" />
+	<meta property="twitter:url" content={$page.url.href} />
+	<meta property="twitter:title" content="Flow - Financial Intelligence" />
+	<meta property="twitter:description" content="Track your spending, understand your habits, and achieve your financial goals with Flow. Simple, beautiful, and intelligent expense tracking." />
+	<meta property="twitter:image" content="/logo.png" />
+	<meta property="twitter:site" content="@official_ryder0" />
+	<meta property="twitter:creator" content="@official_ryder0" />
+
+	<!-- Structured Data / JSON-LD -->
+  <script type="application/ld+json">
+    {JSON.stringify({
+      "@context": "https://schema.org",
+      "@type": "WebApplication",
+      "name": "Flow",
+      "url": "https://flow-spense.pages.dev",
+      "description": description,
+      "applicationCategory": "FinanceApplication",
+      "operatingSystem": "Any",
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "USD"
+      },
+      "screenshot": image,
+      "featureList": "Expense tracking, Category management, Multi-currency support, Analytics dashboard, PWA support",
+      "softwareVersion": "1.0.0",
+      "creator": {
+        "@type": "Organization",
+        "name": "Flow",
+        "url": "https://flow-spense.pages.dev", "logo": "https://flow-spense.pages.dev/logo.png"
+      }
+    }, null, 2)}
+  </script>
+
+	
+</svelte:head>
 
 
 <ModeWatcher />
