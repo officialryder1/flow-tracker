@@ -76,9 +76,9 @@
 
   <!-- Tabs Section -->
   <div class="mt-12">
-    <Tabs bind:value={activeTab} class="space-y-6">
+    <Tabs bind:value={activeTab} class="space-y-3">
       <div class="border-b border-slate-200 dark:border-slate-800">
-        <TabsList class="w-full justify-start bg-transparent h-auto p-0 space-x-6">
+        <TabsList class="w-full justify-start bg-transparent h-auto p-0 space-x-3">
           <TabsTrigger 
             value="overview" 
             class="px-4 py-3 data-[state=active]:border-b-2 data-[state=active]:border-blue-500 rounded-none bg-transparent data-[state=active]:shadow-none data-[state=active]:text-blue-600 dark:data-[state=active]:text-blue-400"
