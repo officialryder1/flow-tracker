@@ -12,12 +12,17 @@
   function setCurrency(currency: Currency) {
     currentCurrency.set(currency);
   }
+  
 </script>
 
 <DropdownMenu>
   <DropdownMenuTrigger asChild>
     <Button variant="outline" class="flex items-center gap-2 px-3">
-      <DollarSign class="w-4 h-4" />
+      {#if $currentCurrency}
+        <span class="text-base">{currencies.find(c => c.code === $currentCurrency)?.symbol || '$'}</span>
+      {:else}
+        <DollarSign class="w-4 h-4" />
+      {/if}
       <span class="font-medium">{$currentCurrency}</span>
       <ChevronDown class="w-3 h-3 opacity-50" />
     </Button>
