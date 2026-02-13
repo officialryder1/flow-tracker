@@ -11,7 +11,7 @@
   let activeTab = "overview";
 </script>
 
-<div class="container mx-auto px-4 py-8 max-w-7xl">
+<div class="container mx-auto">
   <!-- Animated Header -->
   <div class="relative mb-12">
   <div class="absolute inset-0 bg-gradient-to-r from-blue-500/10 via-purple-500/10 to-pink-500/10 blur-3xl -z-10"></div>
