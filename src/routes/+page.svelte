@@ -6,6 +6,7 @@
   import { Tabs, TabsContent, TabsList, TabsTrigger } from "$lib/components/ui/tabs";
   import CategoryManager from "$lib/components/CategoryManager.svelte";
   import { Wallet, TrendingUp, PieChart, Settings, Sparkles } from "@lucide/svelte";
+  import Export from "$lib/components/Export.svelte";
   
   let activeTab = "overview";
 </script>
@@ -22,6 +23,7 @@
           <div class="p-2 sm:p-3 rounded-2xl bg-gradient-to-br from-blue-500 to-purple-600 shadow-lg shadow-blue-500/25 shrink-0">
             <Wallet class="w-6 h-6 sm:w-8 sm:h-8 text-white" />
           </div>
+          
           <div class="min-w-0">
             <h1 class="text-3xl sm:text-4xl lg:text-5xl font-bold bg-gradient-to-r from-slate-900 to-slate-700 dark:from-slate-100 dark:to-slate-300 bg-clip-text text-transparent truncate">
               Flow

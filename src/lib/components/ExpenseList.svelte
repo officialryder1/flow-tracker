@@ -12,10 +12,14 @@
     TableRow,
   } from "$lib/components/ui/table";
   import { Trash2 } from "@lucide/svelte";
+  import Export from "$lib/components/Export.svelte";
 </script>
 
 <div class="space-y-4">
-  <h2 class="text-2xl font-bold">Recent Transactions</h2>
+  <div class="flex items-center gap-3">
+     <h2 class="text-2xl font-bold">Recent Transactions</h2>
+      <Export dateRange="month" filename="flow-monthly" />
+  </div>
   
   <div class="rounded-md border">
     <Table>
