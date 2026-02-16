@@ -8,13 +8,14 @@
   import RecentActivity from "$lib/components/analytics/RecentlyActivity.svelte";
   import { Tabs, TabsContent, TabsList, TabsTrigger } from "$lib/components/ui/tabs";
   import { Card, CardContent, CardHeader, CardTitle } from "$lib/components/ui/card";
+  import { Button } from "$lib/components/ui/button";
   import { 
     BarChart3, 
     PieChart, 
     TrendingUp, 
     Calendar,
     Download,
-    Filter,
+    ArrowLeft,
     RefreshCw
   } from "@lucide/svelte";
   import { expenses } from '$lib/store/expenseStore';
@@ -37,6 +38,12 @@
 
 
 <div class="container mx-auto px-4 py-8 max-w-7xl">
+  <a href="/" class="inline-flex items-center gap-2 mb-6 text-sm text-muted-foreground hover:text-muted-foreground/80 transition-colors">
+      <Button variant="ghost" size="sm" class="gap-2">
+        <ArrowLeft class="w-4 h-4" />
+        Back to Dashboard
+      </Button>
+    </a>
   <!-- Header -->
   <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
     <div>
