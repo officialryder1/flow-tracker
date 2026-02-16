@@ -14,7 +14,8 @@
     FileText, 
     Loader2,
     Check,
-    Calendar
+    Calendar,
+    File
   } from "@lucide/svelte";
   import { expenses, categories } from "$lib/store/expenseStore";
   import { expensesToCSV, downloadFile, generateSummary } from "$lib/utils/export";
@@ -140,7 +141,7 @@ Powered by Flow Finance Tracker
         Exported!
       {:else}
         <Download class="w-4 h-4 mr-2" />
-        Export Data
+        Export <File class="w-4 h-4 ml-1"/>
       {/if}
     </Button>
   </DropdownMenuTrigger>

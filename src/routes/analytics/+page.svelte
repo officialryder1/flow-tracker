@@ -62,7 +62,7 @@
       <!-- Period Selector -->
       <div class="flex rounded-lg border p-1 bg-white dark:bg-gray-900">
         <button
-          on:click={() => selectedPeriod = 'week'}
+          onclick={() => selectedPeriod = 'week'}
           class="px-3 py-1.5 text-sm font-medium rounded-md transition-all
             {selectedPeriod === 'week' 
               ? 'bg-blue-500 text-white shadow-sm' 
@@ -71,7 +71,7 @@
           Week
         </button>
         <button
-          on:click={() => selectedPeriod = 'month'}
+          onclick={() => selectedPeriod = 'month'}
           class="px-3 py-1.5 text-sm font-medium rounded-md transition-all
             {selectedPeriod === 'month' 
               ? 'bg-blue-500 text-white shadow-sm' 
@@ -80,7 +80,7 @@
           Month
         </button>
         <button
-          on:click={() => selectedPeriod = 'year'}
+          onclick={() => selectedPeriod = 'year'}
           class="px-3 py-1.5 text-sm font-medium rounded-md transition-all
             {selectedPeriod === 'year' 
               ? 'bg-blue-500 text-white shadow-sm' 
@@ -91,7 +91,7 @@
       </div>
       
       <button
-        on:click={refreshData}
+        onclick={refreshData}
         class="p-2 rounded-lg border hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
         disabled={isRefreshing}
       >
