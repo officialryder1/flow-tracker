@@ -1,7 +1,7 @@
 <script lang="ts">
-  import { expenses, deleteExpense, categoryColors } from "$lib/store/expenseStore";
-  import { formatCurrencyReactive, formatDate } from "$lib/utils/format";
+  import { expenses as storeExpenses, deleteExpense, categoryColors } from "$lib/store/expenseStore";
   import { currencyConfig } from "$lib/store/currencyStore";
+  import { formatCurrencyReactive, formatDate } from "$lib/utils/format";
   import { Button } from "$lib/components/ui/button";
   import {
     Table,
@@ -11,17 +11,32 @@
     TableHeader,
     TableRow,
   } from "$lib/components/ui/table";
-  import { Trash2 } from "@lucide/svelte";
-  import Export from "$lib/components/Export.svelte";
+  import { Trash2, ArrowRight } from "@lucide/svelte";
+
+  
+  // New prop to limit the number of transactions shown
+  export let limit: number | null = null;
+  export let expenses: any[] | null = null; // Allow external expenses array
+  export let hideTitle: boolean = false;  
+  
+  // If limit is set, show only that many, otherwise show all
+  $: sourceExpenses = expenses || $storeExpenses;
+  $: displayedExpenses = limit ? sourceExpenses.slice(0, limit) : sourceExpenses;
 </script>
 
 <div class="space-y-4">
-  <div class="flex items-center gap-3">
-     <h2 class="text-2xl font-bold">Recent Transactions</h2>
-      <Export dateRange="month" filename="flow-monthly" />
-  </div>
+  {#if !hideTitle}
+    <h2 class="text-2xl font-bold">
+      {limit ? 'Recent Transactions' : 'All Transactions'}
+    </h2>
+  {/if}
+
+  {#if !limit}
+    <!-- Only show title on full page -->
+    <h2 class="text-2xl font-bold">All Transactions</h2>
+  {/if}
   
-  <div class="rounded-md border">
+ <div class="rounded-md border">
     <Table>
       <TableHeader>
         <TableRow>
@@ -33,7 +48,7 @@
         </TableRow>
       </TableHeader>
       <TableBody>
-        {#each $expenses as expense (expense.id)}
+        {#each displayedExpenses as expense (expense.id)}
           <TableRow>
             <TableCell>{formatDate(expense.date)}</TableCell>
             <TableCell class="font-medium">{expense.description}</TableCell>
@@ -52,7 +67,7 @@
               <Button 
                 variant="ghost" 
                 size="sm"
-                onclick={() => deleteExpense(expense.id)}
+                on:click={() => deleteExpense(expense.id)}
               >
                 <Trash2 class="h-4 w-4" />
               </Button>
@@ -68,4 +83,14 @@
       </TableBody>
     </Table>
   </div>
+  
+  {#if limit && sourceExpenses.length > limit}
+    <div class="text-center text-sm text-muted-foreground">
+      Showing {Math.min(limit, sourceExpenses.length)} of {sourceExpenses.length} transactions.
+      <a href="/transactions" class="text-blue-500 hover:text-blue-600 font-medium inline-flex items-center gap-1">
+        View all
+        <ArrowRight class="w-3 h-3" />
+      </a>
+    </div>
+  {/if}
 </div>

@@ -4,8 +4,9 @@
   import SummaryCards from "$lib/components/SummaryCard.svelte";
   import CategoryPieChart from "$lib/components/CategoryPieChart.svelte";
   import { Tabs, TabsContent, TabsList, TabsTrigger } from "$lib/components/ui/tabs";
+  import { Button } from "$lib/components/ui/button";
   import CategoryManager from "$lib/components/CategoryManager.svelte";
-  import { Wallet, TrendingUp, PieChart, Settings, Sparkles } from "@lucide/svelte";
+  import { Wallet, TrendingUp, PieChart, Settings, Sparkles, ArrowRight } from "@lucide/svelte";
   import Export from "$lib/components/Export.svelte";
   
   let activeTab = "overview";
@@ -105,9 +106,24 @@
         </TabsList>
       </div>
 
-      <TabsContent value="overview" class="mt-4 sm:mt-6">
-        <div class="bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl rounded-2xl border border-slate-200 dark:border-slate-800 shadow-lg p-3 sm:p-6">
-          <ExpenseList />
+      <TabsContent value="overview" class="mt-6">
+        <div class="bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl rounded-2xl border border-slate-200 dark:border-slate-800 shadow-lg p-6">
+          <!-- Recent Transactions Header with View All button -->
+          <div class="flex items-center justify-between mb-4">
+            <div>
+              <h3 class="text-lg font-semibold">Recent Transactions</h3>
+              <p class="text-sm text-muted-foreground">Your last 10 expenses</p>
+            </div>
+            <a href="/transactions">
+              <Button variant="outline" class="gap-2">
+                View All
+                <ArrowRight class="w-4 h-4" />
+              </Button>
+            </a>
+          </div>
+          
+          <!-- Recent Transactions List (only 10) -->
+          <ExpenseList limit={10} />
         </div>
       </TabsContent>
       
