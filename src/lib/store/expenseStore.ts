@@ -1,5 +1,6 @@
 import { writable, derived } from 'svelte/store';
 import type { Expense, Category } from '$lib/types';
+import { DEFAULT_CATEGORIES } from '$lib/types';
 
 const initialSummary = {
   total: 0,
@@ -7,58 +8,46 @@ const initialSummary = {
   averagePerDay: 0
 };
 
-// Default categories
-const DEFAULT_CATEGORIES: Category[] = [
-  { id: '1', name: 'Food & Dining', icon: 'utensils', color: '#FF6B6B', budget: 500 },
-  { id: '2', name: 'Transportation', icon: 'car', color: '#4ECDC4', budget: 200 },
-  { id: '3', name: 'Shopping', icon: 'shopping-bag', color: '#45B7D1', budget: 300 },
-  { id: '4', name: 'Entertainment', icon: 'film', color: '#96CEB4', budget: 150 },
-  { id: '5', name: 'Bills & Utilities', icon: 'file-text', color: '#FFEAA7', budget: 400 },
-  { id: '6', name: 'Healthcare', icon: 'heart', color: '#DDA0DD', budget: 200 },
-  { id: '7', name: 'Education', icon: 'book', color: '#98D8C8', budget: 300 },
-  { id: '8', name: 'Other', icon: 'more-horizontal', color: '#B0B0B0', budget: 100 }
-];
+// Create stores with empty defaults first
+export const expenses = writable<Expense[]>([]);
+export const categories = writable<Category[]>(DEFAULT_CATEGORIES);
 
-// Load from localStorage or use defaults
-function loadCategories(): Category[] {
-  if (typeof window === 'undefined') return DEFAULT_CATEGORIES;
-  
+// Initialize from localStorage only on client side
+if (typeof window !== 'undefined') {
   try {
-    const saved = localStorage.getItem('flow-categories');
-    if (saved) {
-      return JSON.parse(saved);
-    }
-  } catch (e) {
-    console.error('Failed to load categories', e);
-  }
-  return DEFAULT_CATEGORIES;
-}
-
-function loadExpenses(): Expense[] {
-  if (typeof window === 'undefined') return [];
-  
-  try {
-    const saved = localStorage.getItem('flow-expenses');
-    if (saved) {
-      const parsed = JSON.parse(saved);
-      return parsed.map((e: any) => ({
+    // Load expenses
+    const savedExpenses = localStorage.getItem('flow-expenses');
+    if (savedExpenses) {
+      const parsed = JSON.parse(savedExpenses);
+      const withDates = parsed.map((e: any) => ({
         ...e,
         date: new Date(e.date),
         createdAt: new Date(e.createdAt)
       }));
+      expenses.set(withDates);
+    } else {
+      // First time user - create a dummy expense to prime the reactive system
+      const dummyExpense: Expense = {
+        id: crypto.randomUUID(),
+        amount: 50, // $50 USD
+        description: 'Sample expense - Delete me!',
+        category: 'Food & Dining',
+        date: new Date(),
+        createdAt: new Date()
+      };
+      expenses.set([dummyExpense]);
+    }
+    
+    // Load categories
+    const savedCategories = localStorage.getItem('flow-categories');
+    if (savedCategories) {
+      categories.set(JSON.parse(savedCategories));
     }
   } catch (e) {
-    console.error('Failed to load expenses', e);
+    console.error('Failed to load from localStorage', e);
   }
-  return [];
-}
-
-// Initialize stores with data
-export const expenses = writable<Expense[]>(loadExpenses());
-export const categories = writable<Category[]>(loadCategories());
-
-// Save to localStorage on changes
-if (typeof window !== 'undefined') {
+  
+  // Save to localStorage on changes
   expenses.subscribe(value => {
     localStorage.setItem('flow-expenses', JSON.stringify(value));
   });

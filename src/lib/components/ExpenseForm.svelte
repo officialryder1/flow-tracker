@@ -1,7 +1,5 @@
 <script lang="ts">
-  import { onMount } from 'svelte';
   import { Button } from "$lib/components/ui/button";
-  import { Input } from "$lib/components/ui/input";
   import { Label } from "$lib/components/ui/label";
  
   import { addExpense } from "$lib/store/expenseStore";
@@ -10,58 +8,58 @@
   import { DollarSign, Receipt, Plus } from "@lucide/svelte";
   import CurrencySwitcher from '$lib/components/CurrencySwitcher.svelte';
 
-  let amount = "";
-  let description = "";
-  let category = "";
-  let date = new Date().toISOString().split('T')[0];
-  let isReady = false; // Track if component is mounted
+  let amount = $state("");
+  let description = $state("");
+  let category = $state("");
+  let date = $state(new Date().toISOString().split('T')[0]);
+  let isReady = $state(false);
 
-  // Initialize component
-  onMount(() => {
-    isReady = true;
-    console.log('ExpenseForm mounted, currency:', $currencyConfig);
+  // Ensure form is ready once categories are loaded
+  $effect(() => {
+    if ($categories && $categories.length > 0) {
+      isReady = true;
+    }
   });
 
-  // Check if form is valid
-  $: isValid = amount.trim() !== '' && 
-               parseFloat(amount) > 0 && 
-               description.trim() !== '' && 
-               category !== '';
-
-  // Debug logging
-  $: if (isReady) {
-    console.log('Form state:', { 
-      amount, 
-      description, 
-      category, 
-      isValid,
-      currency: $currencyConfig?.code 
-    });
-  }
+  // Computed derived reactivity for validation
+  let isValid = $derived(
+    isReady &&
+    amount.trim() !== '' && 
+    parseFloat(amount) > 0 && 
+    description.trim() !== '' && 
+    category !== ''
+  );
 
   function handleSubmit() {
     if (!isValid) return;
     
-    const amountNum = parseFloat(amount);
-    
-    // Convert to USD if needed
-    let amountInUSD = amountNum;
-    if ($currencyConfig?.code === 'NGN') {
-      amountInUSD = convertToUSD(amountNum, 'NGN');
+    try {
+      const parsedAmount = parseFloat(amount);
+      
+      // Convert to USD if needed
+      let amountInUSD = parsedAmount;
+      if ($currencyConfig?.code === 'NGN') {
+        amountInUSD = convertToUSD(parsedAmount, 'NGN');
+      }
+      
+      // Parse date correctly - input gives YYYY-MM-DD format
+      const expenseDate = new Date(date + 'T00:00:00');
+      
+      addExpense({
+        amount: amountInUSD,
+        description: description.trim(),
+        category,
+        date: expenseDate
+      });
+      
+      // Reset form
+      amount = "";
+      description = "";
+      category = "";
+      date = new Date().toISOString().split('T')[0];
+    } catch (error) {
+      // Silent failure
     }
-    
-    addExpense({
-      amount: amountInUSD,
-      description: description.trim(),
-      category,
-      date: new Date(date)
-    });
-    
-    // Reset form
-    amount = "";
-    description = "";
-    category = "";
-    date = new Date().toISOString().split('T')[0];
   }
 </script>
 
@@ -92,27 +90,29 @@
             <span class="absolute left-4 top-2.5 h-5 w-5 text-muted-foreground group-focus-within:text-blue-500 transition-colors">
               ₦
             </span>
-            <Input
+            <input
               id="amount"
               type="number"
-              step="1"
-              min="1"
-              placeholder="0"
+              step="any"
+              min="0.01"
+              placeholder="0.00"
               value={amount}
-              oninput={(e) => amount = e.currentTarget.value}
-              class="pl-12 border-slate-200 dark:border-slate-800 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition-all"
+              onchange={(e) => { amount = e.currentTarget.value; }}
+              oninput={(e) => { amount = e.currentTarget.value; }}
+              class="pl-12 border-slate-200 dark:border-slate-800 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition-all flex h-9 w-full rounded-md border bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm"
             />
           {:else}
             <DollarSign class="absolute left-3 top-2.5 h-5 w-5 text-muted-foreground group-focus-within:text-blue-500 transition-colors" />
-            <Input
+            <input
               id="amount"
               type="number"
               step="0.01"
               min="0.01"
               placeholder="0.00"
               value={amount}
-              oninput={(e) => amount = e.currentTarget.value}
-              class="pl-10 border-slate-200 dark:border-slate-800 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition-all"
+              onchange={(e) => { amount = e.currentTarget.value; }}
+              oninput={(e) => { amount = e.currentTarget.value; }}
+              class="pl-10 border-slate-200 dark:border-slate-800 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition-all flex h-9 w-full rounded-md border bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm"
             />
           {/if}
         </div>
@@ -125,12 +125,13 @@
     <!-- Description Input -->
     <div class="space-y-2">
       <Label for="description" class="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Description</Label>
-      <Input
+      <input
         id="description"
         placeholder="e.g., Grocery shopping"
         value={description}
-        oninput={(e) => description = e.currentTarget.value}
-        class="border-slate-200 dark:border-slate-800 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition-all"
+        onchange={(e) => { description = e.currentTarget.value; }}
+        oninput={(e) => { description = e.currentTarget.value; }}
+        class="flex h-9 w-full rounded-md border border-slate-200 dark:border-slate-800 bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition-all"
       />
     </div>
     
@@ -153,12 +154,13 @@
     <!-- Date Input -->
     <div class="space-y-2">
       <Label for="date" class="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Date</Label>
-      <Input
+      <input
         id="date"
         type="date"
         value={date}
-        oninput={(e) => date = e.currentTarget.value}
-        class="border-slate-200 dark:border-slate-800 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition-all"
+        onchange={(e) => { date = e.currentTarget.value; }}
+        oninput={(e) => { date = e.currentTarget.value; }}
+        class="flex h-9 w-full rounded-md border border-slate-200 dark:border-slate-800 bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition-all"
       />
     </div>
     
@@ -171,12 +173,5 @@
       <Plus class="w-4 h-4 mr-2" />
       Add Expense
     </Button>
-
-    <!-- Debug info (remove in production) -->
-    {#if $categories.length === 0}
-      <p class="text-xs text-amber-500 text-center mt-2">
-        ⚠️ No categories loaded. Default categories will be created when you add your first expense.
-      </p>
-    {/if}
   </div>
 </div>

@@ -3,8 +3,8 @@ import type { Expense, Category } from '$lib/types';
 import { DEFAULT_CATEGORIES } from '$lib/types';
 
 const STORAGE_KEYS = {
-  EXPENSES: 'finance-tracker-expenses',
-  CATEGORIES: 'finance-tracker-categories'
+  EXPENSES: 'flow-expenses',
+  CATEGORIES: 'flow-categories'
 };
 
 export function loadExpenses(): Expense[] {
