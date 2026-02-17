@@ -165,9 +165,7 @@
   
   <!-- Footer -->
   <footer class="mt-12 sm:mt-16 text-center px-4">
-    <p class="text-xs sm:text-sm text-muted-foreground">
-      Flow — Track your money, understand your habits, achieve your goals.
-    </p>
+
     <p>
       &copy; {new Date().getFullYear()} Flow. made with 💖 by 
       <a href="https://rydertech.ng" class="text-xs text-blue-500 hover:underline">Rydertech</a>
