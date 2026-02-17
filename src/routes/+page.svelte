@@ -7,7 +7,22 @@
   import { Button } from "$lib/components/ui/button";
   import CategoryManager from "$lib/components/CategoryManager.svelte";
   import { Wallet, TrendingUp, PieChart, Settings, Sparkles, ArrowRight } from "@lucide/svelte";
-  import Export from "$lib/components/Export.svelte";
+  import InsightsCard from "$lib/components/analytics/InsightsCard.svelte";
+  import ChartGrid from "$lib/components/analytics/ChartGrid.svelte";
+
+ 
+  let data = {
+    labels: ['January', 'February', 'March', 'April', 'May', 'June'],
+    datasets: [
+      {
+        label: 'Expenses',
+        data: [500, 700, 400, 600, 800, 550],
+        backgroundColor: 'rgba(59, 130, 246, 0.7)',
+        borderColor: 'rgba(59, 130, 246, 1)',
+        borderWidth: 1,
+      },
+    ],
+  };
   
   let activeTab = "overview";
 </script>
@@ -94,7 +109,7 @@
             class="px-3 sm:px-4 py-2 sm:py-3 data-[state=active]:border-b-2 data-[state=active]:border-purple-500 rounded-none bg-transparent data-[state=active]:shadow-none data-[state=active]:text-purple-600 dark:data-[state=active]:text-purple-400 text-sm sm:text-base whitespace-nowrap"
           >
             <PieChart class="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2 shrink-0" />
-            <a href="/analytics" class="inline-block">Analytics</a>
+            <span class="inline-block">Analytics</span>
           </TabsTrigger>
           <TabsTrigger 
             value="categories" 
@@ -129,7 +144,14 @@
       
       <TabsContent value="analytics" class="mt-4 sm:mt-6">
         <div class="bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl rounded-2xl border border-slate-200 dark:border-slate-800 shadow-lg p-3 sm:p-6">
-          <!-- Your analytics content -->
+        <a href="/analytics" class="inline-flex items-center gap-2 mb-6 text-sm text-muted-foreground hover:text-muted-foreground/80 transition-colors">
+          <Button variant="ghost" size="sm" class="gap-2">
+            <ArrowRight class="w-4 h-4" />
+            View Full Analytics
+          </Button>
+        </a>
+          <InsightsCard />
+          <ChartGrid period="week" />
         </div>
       </TabsContent>
       
@@ -146,11 +168,14 @@
     <p class="text-xs sm:text-sm text-muted-foreground">
       Flow — Track your money, understand your habits, achieve your goals.
     </p>
+    <p>
+      &copy; {new Date().getFullYear()} Flow. made with 💖 by 
+      <a href="https://rydertech.ng" class="text-xs text-blue-500 hover:underline">Rydertech</a>
+    </p>
   </footer>
 </div>
 
 <style>
-  /* Add this to your global styles or keep here if using <style> tag */
   @media (max-width: 480px) {
     .xs\:inline {
       display: inline;

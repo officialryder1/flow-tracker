@@ -21,10 +21,24 @@
   import { expenses } from '$lib/store/expenseStore';
   import { currencyConfig } from '$lib/store/currencyStore';
   import { formatCurrencyReactive } from '$lib/utils/format';
+  import ChartWrapper from "$lib/components/analytics/ChartWrapper.svelte";
   
   let selectedPeriod: 'week' | 'month' | 'year' = 'month';
   let selectedView: 'spending' | 'categories' | 'insights' = 'spending';
   let isRefreshing = false;
+
+    let data = {
+      labels: ['January', 'February', 'March', 'April', 'May', 'June'],
+      datasets: [
+        {
+          label: 'Spending',
+          data: [500, 700, 400, 600, 800, 750],
+          backgroundColor: 'rgba(59, 130, 246, 0.5)',
+          borderColor: 'rgba(59, 130, 246, 1)',
+          borderWidth: 1,
+        },
+      ],
+    };
   
   function refreshData() {
     isRefreshing = true;
@@ -176,7 +190,22 @@
         </CardContent>
       </Card>
     </div>
+    <div class="lg:col-span-1">
+      <Card class="h-full">
+        <CardHeader class="border-b">
+          <CardTitle class="flex items-center gap-2">
+            <BarChart3 class="w-5 h-5 text-green-500" />
+            Weekly Comparison
+          </CardTitle>
+        </CardHeader>
+        <CardContent class="p-6">
+          <ChartWrapper type="bar" period={selectedPeriod} />
+        </CardContent>
+      </Card>
+    </div>
   </div>
+
+  
   
   <!-- Insights and Recent Activity -->
   <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">

@@ -70,7 +70,7 @@
     <Dialog bind:open={showAddDialog}>
       <DialogTrigger asChild>
         <!-- This button is the trigger - no nested buttons -->
-        <Button on:click={() => resetForm()}>
+        <Button onclick={() => resetForm()}>
           <Plus class="h-4 w-4 mr-2" />
           Add Category
         </Button>
@@ -124,10 +124,10 @@
         </div>
         
         <DialogFooter>
-          <Button variant="outline" on:click={() => showAddDialog = false}>
+          <Button variant="outline" onclick={() => showAddDialog = false}>
             Cancel
           </Button>
-          <Button on:click={handleAddSubmit}>
+          <Button onclick={handleAddSubmit}>
             Add Category
           </Button>
         </DialogFooter>
@@ -185,10 +185,10 @@
         </div>
         
         <DialogFooter>
-          <Button variant="outline" on:click={() => showEditDialog = false}>
+          <Button variant="outline" onclick={() => showEditDialog = false}>
             Cancel
           </Button>
-          <Button on:click={handleEditSubmit}>
+          <Button onclick={handleEditSubmit}>
             Save Changes
           </Button>
         </DialogFooter>
@@ -212,14 +212,14 @@
             <Button 
               variant="ghost" 
               size="sm"
-              on:click={() => handleEdit(category)}
+              onclick={() => handleEdit(category)}
             >
               <Pencil class="h-4 w-4" />
             </Button>
             <Button 
               variant="ghost" 
               size="sm"
-              on:click={() => deleteCategory(category.id)}
+              onclick={() => deleteCategory(category.id)}
               disabled={$categories.length <= 1}
             >
               <Trash2 class="h-4 w-4" />
