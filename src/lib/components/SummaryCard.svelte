@@ -8,7 +8,7 @@
 {#each [
   { 
     title: "Total Spent", 
-    value: $summary.total, 
+    value: $summary?.total || 0, 
     icon: Wallet, 
     color: "from-blue-500 to-cyan-500",
     trend: "+2.5%",
@@ -16,7 +16,7 @@
   },
   { 
     title: "Daily Average", 
-    value: $summary.averagePerDay, 
+    value: $summary?.averagePerDay || 0, 
     icon: TrendingUp, 
     color: "from-purple-500 to-pink-500",
     trend: "-5.2%",
@@ -24,7 +24,7 @@
   },
   { 
     title: "Categories", 
-    value: Object.keys($summary.byCategory).length, 
+    value: Object.keys($summary?.byCategory || {}).length, 
     icon: Calendar, 
     color: "from-amber-500 to-orange-500",
     subtitle: "active",

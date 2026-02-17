@@ -23,23 +23,7 @@
             "type": "image/png"
         }
 
-    ],
-
-     "screenshots": [
-        {
-        "src": "/screenshot-desktop.png",
-        "sizes": "1280x720",
-        "type": "image/png",
-        "form_factor": "wide",
-        "label": "Flow Dashboard on Desktop"
-        },
-        {
-        "src": "/screenshot-mobile.png",
-        "sizes": "375x667",
-        "type": "image/png",
-        "form_factor": "narrow",
-        "label": "Flow Dashboard on Mobile"
-        }
     ]
+
 }
     

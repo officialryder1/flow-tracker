@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { categories, addCategory, updateCategory, deleteCategory } from "$lib/store/expenseStore";
+  import { categories } from "$lib/store/expenseStore";
   import { Button } from "$lib/components/ui/button";
   import { Input } from "$lib/components/ui/input";
   import { Label } from "$lib/components/ui/label";

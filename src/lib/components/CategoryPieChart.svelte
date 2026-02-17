@@ -6,7 +6,7 @@
   
   let chartData = $derived.by(() => {
     const data = [];
-    for (const [category, amount] of Object.entries($summary.byCategory)) {
+    for (const [category, amount] of Object.entries($summary?.byCategory || {})) {
       const cat = $categories.find(c => c.name === category);
       data.push({
         name: category,
@@ -52,14 +52,14 @@
           <div class="text-right">
             <span class="text-sm font-bold">{formatCurrencyReactive(item.value, $currencyConfig)}</span>
             <span class="text-xs text-muted-foreground ml-2">
-              {((item.value / $summary.total) * 100).toFixed(1)}%
+              {((item.value / ($summary?.total || 1)) * 100).toFixed(1)}%
             </span>
           </div>
         </div>
         <div class="relative h-2 bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden">
           <div 
             class="absolute top-0 left-0 h-full rounded-full transition-all duration-1000 ease-out"
-            style="width: {(item.value / $summary.total) * 100}%; background: linear-gradient(to right, {item.color}80, {item.color})"
+            style="width: {(item.value / ($summary?.total || 1)) * 100}%; background: linear-gradient(to right, {item.color}80, {item.color})"
           ></div>
         </div>
       </div>
@@ -79,7 +79,7 @@
       <div class="flex justify-between text-sm">
         <span class="font-medium text-muted-foreground">Total Spent</span>
         <span class="font-bold text-lg bg-gradient-to-r from-slate-900 to-slate-700 dark:from-slate-100 dark:to-slate-300 bg-clip-text text-transparent">
-          {formatCurrencyReactive($summary.total, $currencyConfig)}
+          {formatCurrencyReactive($summary?.total || 0, $currencyConfig)}
         </span>
       </div>
     </div>

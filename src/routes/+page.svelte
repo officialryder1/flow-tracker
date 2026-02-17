@@ -11,19 +11,6 @@
   import ChartGrid from "$lib/components/analytics/ChartGrid.svelte";
 
  
-  let data = {
-    labels: ['January', 'February', 'March', 'April', 'May', 'June'],
-    datasets: [
-      {
-        label: 'Expenses',
-        data: [500, 700, 400, 600, 800, 550],
-        backgroundColor: 'rgba(59, 130, 246, 0.7)',
-        borderColor: 'rgba(59, 130, 246, 1)',
-        borderWidth: 1,
-      },
-    ],
-  };
-  
   let activeTab = "overview";
 </script>
 

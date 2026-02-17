@@ -67,7 +67,7 @@
               <Button 
                 variant="ghost" 
                 size="sm"
-                on:click={() => deleteExpense(expense.id)}
+                onclick={() => deleteExpense(expense.id)}
               >
                 <Trash2 class="h-4 w-4" />
               </Button>
