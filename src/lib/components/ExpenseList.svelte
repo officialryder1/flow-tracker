@@ -33,7 +33,7 @@
 
   {#if !limit}
     <!-- Only show title on full page -->
-    <h2 class="text-2xl font-bold">All Transactions.</h2>
+    <h2 class="text-2xl font-bold">All Transactions</h2>
   {/if}
   
  <div class="rounded-md border">
