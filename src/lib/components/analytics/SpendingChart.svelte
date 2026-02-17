@@ -4,14 +4,15 @@
   import { expenses } from '$lib/store/expenseStore';
   import { currencyConfig } from '$lib/store/currencyStore';
   
-  export let period: 'week' | 'month' | 'year' = 'week';
+  // Use $props for Svelte 5
+  let { period = 'month' }: { period: 'week' | 'month' | 'year' } = $props();
   
-  let canvas: HTMLCanvasElement;
+  let canvas = $state(HTMLCanvasElement)
   let chart: Chart;
   
-  // Process data based on period
-  $: chartData = processData($expenses, period);
-  $: currentCurrency = $currencyConfig;
+  // Use $derived for computed values in Svelte 5
+  let chartData = $derived(processData($expenses, period));
+  let currentCurrency = $derived($currencyConfig);
   
   function processData(expenses: any[], period: string) {
     const now = new Date();
@@ -30,7 +31,7 @@
             const eDate = new Date(e.date);
             return eDate.toDateString() === date.toDateString();
           })
-          .reduce((sum, e) => sum + e.amount, 0); // Amount in USD
+          .reduce((sum, e) => sum + e.amount, 0);
         
         data.push(dayTotal);
       }
@@ -49,7 +50,7 @@
             const eDate = new Date(e.date);
             return eDate >= startDate && eDate <= endDate;
           })
-          .reduce((sum, e) => sum + e.amount, 0); // Amount in USD
+          .reduce((sum, e) => sum + e.amount, 0);
         
         data.push(weekTotal);
       }
@@ -66,7 +67,7 @@
             return eDate.getMonth() === date.getMonth() && 
                    eDate.getFullYear() === date.getFullYear();
           })
-          .reduce((sum, e) => sum + e.amount, 0); // Amount in USD
+          .reduce((sum, e) => sum + e.amount, 0);
         
         data.push(monthTotal);
       }
@@ -75,25 +76,22 @@
     return { labels, data };
   }
   
-  // Format currency for display (converts USD to selected currency)
   function formatCurrencyForDisplay(usdAmount: number) {
-    // Convert USD to selected currency
     const convertedAmount = currentCurrency.code === 'USD' 
       ? usdAmount 
-      : usdAmount * 1500; // 1 USD = 1500 NGN
+      : usdAmount * 1500;
     
     return new Intl.NumberFormat(currentCurrency.code === 'USD' ? 'en-US' : 'en-NG', {
       style: 'currency',
       currency: currentCurrency.code,
-      minimumFractionDigits: currentCurrency.code === 'USD' ? 2 : 0,
-      maximumFractionDigits: currentCurrency.code === 'USD' ? 2 : 0
+      minimumFractionDigits: currentCurrency.code === 'USD' ? 2 : 0
     }).format(convertedAmount);
   }
   
   function createChart() {
     if (chart) chart.destroy();
     
-    const ctx = canvas.getContext('2d');
+    const ctx = canvas?.getContext('2d');
     if (!ctx) return;
     
     chart = new Chart(ctx, {
@@ -118,14 +116,10 @@
         responsive: true,
         maintainAspectRatio: false,
         plugins: {
-          legend: {
-            display: false
-          },
+          legend: { display: false },
           tooltip: {
             callbacks: {
-              label: (context) => {
-                return formatCurrencyForDisplay(context.raw as number);
-              }
+              label: (context) => formatCurrencyForDisplay(context.raw as number)
             }
           }
         },
@@ -133,9 +127,7 @@
           y: {
             beginAtZero: true,
             ticks: {
-              callback: (value) => {
-                return formatCurrencyForDisplay(value as number);
-              }
+              callback: (value) => formatCurrencyForDisplay(value as number)
             }
           }
         }
@@ -143,19 +135,22 @@
     });
   }
   
-  onMount(() => {
-    createChart();
+  // Use $effect to watch for changes in Svelte 5
+  $effect(() => {
+    if (canvas) {
+      createChart();
+    }
     
     return () => {
       if (chart) chart.destroy();
     };
   });
   
-  $: {
-    if (canvas) {
-      createChart();
-    }
-  }
+  // Also watch for period changes
+  $effect(() => {
+    // Just accessing period in the effect ensures it runs when period changes
+    console.log('Period changed:', period);
+  });
 </script>
 
 <div class="w-full h-80">

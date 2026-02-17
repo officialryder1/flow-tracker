@@ -1,6 +1,4 @@
 <script lang="ts">
-  import { page } from '$app/stores';
-
   import ExportButton from "$lib/components/Export.svelte";
   import SpendingChart from "$lib/components/analytics/SpendingChart.svelte";
   import CategoryBreakdown from "$lib/components/analytics/CategoryBreakdown.svelte";
@@ -23,9 +21,11 @@
   import { formatCurrencyReactive } from '$lib/utils/format';
   import ChartWrapper from "$lib/components/analytics/ChartWrapper.svelte";
   
-  let selectedPeriod: 'week' | 'month' | 'year' = 'week';
+  let selectedPeriod: 'week' | 'month' | 'year' = $state('week');
   let selectedView: 'spending' | 'categories' | 'insights' = 'spending';
-  let isRefreshing = false;
+  let isRefreshing = $state(false);
+
+  $inspect(selectedPeriod);
 
   
   function refreshData() {
@@ -34,8 +34,12 @@
       isRefreshing = false;
     }, 1000);
   }
+
+  let totalSpent = $state(0)
   
-  $: totalSpent = $expenses.reduce((sum, e) => sum + e.amount, 0);
+  $effect(() => {
+    totalSpent = $expenses.reduce((sum, expense) => sum + expense.amount, 0);
+  });
 </script>
 
 
