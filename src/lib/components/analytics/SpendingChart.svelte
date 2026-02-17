@@ -4,13 +4,14 @@
   import { expenses } from '$lib/store/expenseStore';
   import { currencyConfig } from '$lib/store/currencyStore';
   
-  export let period: 'week' | 'month' | 'year' = 'month';
+  export let period: 'week' | 'month' | 'year' = 'week';
   
   let canvas: HTMLCanvasElement;
   let chart: Chart;
   
   // Process data based on period
   $: chartData = processData($expenses, period);
+  $: currentCurrency = $currencyConfig;
   
   function processData(expenses: any[], period: string) {
     const now = new Date();
@@ -18,6 +19,7 @@
     let data: number[] = [];
     
     if (period === 'week') {
+      // Last 7 days
       for (let i = 6; i >= 0; i--) {
         const date = new Date(now);
         date.setDate(date.getDate() - i);
@@ -28,27 +30,31 @@
             const eDate = new Date(e.date);
             return eDate.toDateString() === date.toDateString();
           })
-          .reduce((sum, e) => sum + e.amount, 0);
+          .reduce((sum, e) => sum + e.amount, 0); // Amount in USD
         
         data.push(dayTotal);
       }
     } else if (period === 'month') {
-      for (let i = 29; i >= 0; i -= 3) {
-        const date = new Date(now);
-        date.setDate(date.getDate() - i);
-        labels.push(date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }));
+      // Last 30 days (grouped by week)
+      for (let i = 3; i >= 0; i--) {
+        const endDate = new Date(now);
+        endDate.setDate(endDate.getDate() - (i * 7));
+        const startDate = new Date(endDate);
+        startDate.setDate(startDate.getDate() - 7);
         
-        const periodTotal = expenses
+        labels.push(`Week ${4 - i}`);
+        
+        const weekTotal = expenses
           .filter(e => {
             const eDate = new Date(e.date);
-            const daysDiff = Math.floor((now.getTime() - eDate.getTime()) / (1000 * 3600 * 24));
-            return daysDiff <= i && daysDiff > i - 3;
+            return eDate >= startDate && eDate <= endDate;
           })
-          .reduce((sum, e) => sum + e.amount, 0);
+          .reduce((sum, e) => sum + e.amount, 0); // Amount in USD
         
-        data.push(periodTotal);
+        data.push(weekTotal);
       }
     } else {
+      // Last 12 months
       for (let i = 11; i >= 0; i--) {
         const date = new Date(now);
         date.setMonth(date.getMonth() - i);
@@ -60,7 +66,7 @@
             return eDate.getMonth() === date.getMonth() && 
                    eDate.getFullYear() === date.getFullYear();
           })
-          .reduce((sum, e) => sum + e.amount, 0);
+          .reduce((sum, e) => sum + e.amount, 0); // Amount in USD
         
         data.push(monthTotal);
       }
@@ -69,19 +75,28 @@
     return { labels, data };
   }
   
-  function formatCurrency(value: number) {
-    const currency = $currencyConfig;
-    return new Intl.NumberFormat(currency.code === 'USD' ? 'en-US' : 'en-NG', {
+  // Format currency for display (converts USD to selected currency)
+  function formatCurrencyForDisplay(usdAmount: number) {
+    // Convert USD to selected currency
+    const convertedAmount = currentCurrency.code === 'USD' 
+      ? usdAmount 
+      : usdAmount * 1500; // 1 USD = 1500 NGN
+    
+    return new Intl.NumberFormat(currentCurrency.code === 'USD' ? 'en-US' : 'en-NG', {
       style: 'currency',
-      currency: currency.code,
-      minimumFractionDigits: currency.code === 'USD' ? 2 : 0
-    }).format(value);
+      currency: currentCurrency.code,
+      minimumFractionDigits: currentCurrency.code === 'USD' ? 2 : 0,
+      maximumFractionDigits: currentCurrency.code === 'USD' ? 2 : 0
+    }).format(convertedAmount);
   }
   
   function createChart() {
     if (chart) chart.destroy();
     
-    chart = new Chart(canvas, {
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+    
+    chart = new Chart(ctx, {
       type: 'line',
       data: {
         labels: chartData.labels,
@@ -109,7 +124,7 @@
           tooltip: {
             callbacks: {
               label: (context) => {
-                return formatCurrency(context.raw as number);
+                return formatCurrencyForDisplay(context.raw as number);
               }
             }
           }
@@ -119,7 +134,7 @@
             beginAtZero: true,
             ticks: {
               callback: (value) => {
-                return formatCurrency(value as number);
+                return formatCurrencyForDisplay(value as number);
               }
             }
           }
@@ -131,13 +146,11 @@
   onMount(() => {
     createChart();
     
-    // Cleanup on unmount
     return () => {
       if (chart) chart.destroy();
     };
   });
   
-  // Recreate chart when data or period changes
   $: {
     if (canvas) {
       createChart();
@@ -146,5 +159,11 @@
 </script>
 
 <div class="w-full h-80">
-  <canvas bind:this={canvas}></canvas>
+  {#if chartData.data.some(v => v > 0)}
+    <canvas bind:this={canvas}></canvas>
+  {:else}
+    <div class="h-full flex items-center justify-center">
+      <p class="text-muted-foreground">No spending data for this period</p>
+    </div>
+  {/if}
 </div>

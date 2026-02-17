@@ -8,6 +8,7 @@
   let chart: Chart;
   
   $: categoryData = processCategoryData();
+  $: currentCurrency = $currencyConfig;
   
   function processCategoryData() {
     const byCategory = $expenses.reduce((acc, e) => {
@@ -25,7 +26,7 @@
       .reduce((sum, [,amt]) => sum + amt, 0);
     
     let labels = sorted.map(([cat]) => cat);
-    let data = sorted.map(([,amt]) => amt);
+    let data = sorted.map(([,amt]) => amt); // Amounts in USD
     let colors = sorted.map(([cat]) => {
       const category = $categories.find(c => c.name === cat);
       return category?.color || '#94A3B8';
@@ -40,19 +41,28 @@
     return { labels, data, colors, total: data.reduce((a, b) => a + b, 0) };
   }
   
-  function formatCurrency(value: number) {
-    const currency = $currencyConfig;
-    return new Intl.NumberFormat(currency.code === 'USD' ? 'en-US' : 'en-NG', {
+  // Format currency for display (converts USD to selected currency)
+  function formatCurrencyForDisplay(usdAmount: number) {
+    // Convert USD to selected currency
+    const convertedAmount = currentCurrency.code === 'USD' 
+      ? usdAmount 
+      : usdAmount * 1500; // 1 USD = 1500 NGN
+    
+    return new Intl.NumberFormat(currentCurrency.code === 'USD' ? 'en-US' : 'en-NG', {
       style: 'currency',
-      currency: currency.code,
-      minimumFractionDigits: currency.code === 'USD' ? 2 : 0
-    }).format(value);
+      currency: currentCurrency.code,
+      minimumFractionDigits: currentCurrency.code === 'USD' ? 2 : 0,
+      maximumFractionDigits: currentCurrency.code === 'USD' ? 2 : 0
+    }).format(convertedAmount);
   }
   
   function createChart() {
     if (chart) chart.destroy();
     
-    chart = new Chart(canvas, {
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+    
+    chart = new Chart(ctx, {
       type: 'doughnut',
       data: {
         labels: categoryData.labels,
@@ -79,9 +89,9 @@
           tooltip: {
             callbacks: {
               label: (context) => {
-                const value = context.raw as number;
-                const percentage = ((value / categoryData.total) * 100).toFixed(1);
-                return `${context.label}: ${formatCurrency(value)} (${percentage}%)`;
+                const usdValue = context.raw as number;
+                const percentage = ((usdValue / categoryData.total) * 100).toFixed(1);
+                return `${context.label}: ${formatCurrencyForDisplay(usdValue)} (${percentage}%)`;
               }
             }
           }
@@ -118,7 +128,7 @@
     </div>
   {:else}
     <div class="h-full flex items-center justify-center">
-      <p class="text-muted-foreground">No data to display</p>
+      <p class="text-muted-foreground">No category data available</p>
     </div>
   {/if}
 </div>

@@ -23,22 +23,10 @@
   import { formatCurrencyReactive } from '$lib/utils/format';
   import ChartWrapper from "$lib/components/analytics/ChartWrapper.svelte";
   
-  let selectedPeriod: 'week' | 'month' | 'year' = 'month';
+  let selectedPeriod: 'week' | 'month' | 'year' = 'week';
   let selectedView: 'spending' | 'categories' | 'insights' = 'spending';
   let isRefreshing = false;
 
-    let data = {
-      labels: ['January', 'February', 'March', 'April', 'May', 'June'],
-      datasets: [
-        {
-          label: 'Spending',
-          data: [500, 700, 400, 600, 800, 750],
-          backgroundColor: 'rgba(59, 130, 246, 0.5)',
-          borderColor: 'rgba(59, 130, 246, 1)',
-          borderWidth: 1,
-        },
-      ],
-    };
   
   function refreshData() {
     isRefreshing = true;

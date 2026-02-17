@@ -15,11 +15,14 @@
   // Process data based on chart type
   $: chartData = processChartData();
   
+  // Get current currency config for formatting
+  $: currentCurrency = $currencyConfig;
+  
   function processChartData() {
     const now = new Date();
     
     if (type === 'doughnut' || type === 'pie') {
-      // Category breakdown
+      // Category breakdown - amounts are already in USD from store
       const byCategory = $expenses.reduce((acc, e) => {
         if (category === 'all' || e.category === category) {
           acc[e.category] = (acc[e.category] || 0) + e.amount;
@@ -32,7 +35,7 @@
         .slice(0, 8);
       
       const labels = sorted.map(([cat]) => cat);
-      const data = sorted.map(([,amt]) => amt);
+      const data = sorted.map(([,amt]) => amt); // Amounts in USD
       const colors = sorted.map(([cat]) => {
         const catObj = $categories.find(c => c.name === cat);
         return catObj?.color || `hsl(${Math.random() * 360}, 70%, 60%)`;
@@ -41,7 +44,7 @@
       return { labels, data, colors };
       
     } else if (type === 'line' || type === 'bar') {
-      // Time-based data
+      // Time-based data - amounts are in USD
       let labels: string[] = [];
       let data: number[] = [];
       
@@ -58,7 +61,7 @@
               const eDate = new Date(e.date);
               return eDate.toDateString() === date.toDateString();
             })
-            .reduce((sum, e) => sum + e.amount, 0);
+            .reduce((sum, e) => sum + e.amount, 0); // Amount in USD
           
           data.push(dayTotal);
         }
@@ -78,7 +81,7 @@
               const eDate = new Date(e.date);
               return eDate >= startDate && eDate <= endDate;
             })
-            .reduce((sum, e) => sum + e.amount, 0);
+            .reduce((sum, e) => sum + e.amount, 0); // Amount in USD
           
           data.push(weekTotal);
         }
@@ -96,7 +99,7 @@
               return eDate.getMonth() === date.getMonth() && 
                      eDate.getFullYear() === date.getFullYear();
             })
-            .reduce((sum, e) => sum + e.amount, 0);
+            .reduce((sum, e) => sum + e.amount, 0); // Amount in USD
           
           data.push(monthTotal);
         }
@@ -108,13 +111,19 @@
     return { labels: [], data: [] };
   }
   
-  function formatCurrency(value: number) {
-    const currency = $currencyConfig;
-    return new Intl.NumberFormat(currency.code === 'USD' ? 'en-US' : 'en-NG', {
+  // Format currency for display (converts USD to selected currency)
+  function formatCurrencyForDisplay(usdAmount: number) {
+    // Convert USD to selected currency
+    const convertedAmount = currentCurrency.code === 'USD' 
+      ? usdAmount 
+      : usdAmount * 1500; // 1 USD = 1500 NGN
+    
+    return new Intl.NumberFormat(currentCurrency.code === 'USD' ? 'en-US' : 'en-NG', {
       style: 'currency',
-      currency: currency.code,
-      minimumFractionDigits: currency.code === 'USD' ? 2 : 0
-    }).format(value);
+      currency: currentCurrency.code,
+      minimumFractionDigits: currentCurrency.code === 'USD' ? 2 : 0,
+      maximumFractionDigits: currentCurrency.code === 'USD' ? 2 : 0
+    }).format(convertedAmount);
   }
   
   function createChart() {
@@ -153,10 +162,10 @@
             tooltip: {
               callbacks: {
                 label: (context) => {
-                  const value = context.raw as number;
+                  const usdValue = context.raw as number;
                   const total = (context.dataset.data as number[]).reduce((a, b) => a + b, 0);
-                  const percentage = ((value / total) * 100).toFixed(1);
-                  return `${context.label}: ${formatCurrency(value)} (${percentage}%)`;
+                  const percentage = ((usdValue / total) * 100).toFixed(1);
+                  return `${context.label}: ${formatCurrencyForDisplay(usdValue)} (${percentage}%)`;
                 }
               }
             }
@@ -196,7 +205,8 @@
             tooltip: {
               callbacks: {
                 label: (context) => {
-                  return formatCurrency(context.raw as number);
+                  const usdValue = context.raw as number;
+                  return formatCurrencyForDisplay(usdValue);
                 }
               }
             }
@@ -206,7 +216,7 @@
               beginAtZero: true,
               ticks: {
                 callback: (value) => {
-                  return formatCurrency(value as number);
+                  return formatCurrencyForDisplay(value as number);
                 }
               }
             }
