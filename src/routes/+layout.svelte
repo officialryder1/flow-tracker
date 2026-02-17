@@ -15,6 +15,7 @@
 
 	onMount(() => {
 		mounted = true
+		detectServiceWorkerUpdate();
 	})
 
 	let updateAvailable = $state(false);
@@ -35,6 +36,7 @@
 			});
     	});
 	}
+
 
 	function applyUpdate() {
 		registration?.waiting?.postMessage({ type: 'SKIP_WAITING' });
