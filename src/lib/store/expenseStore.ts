@@ -29,7 +29,7 @@ if (typeof window !== 'undefined') {
       // First time user - create a dummy expense to prime the reactive system
       const dummyExpense: Expense = {
         id: crypto.randomUUID(),
-        amount: 50, // $50 USD
+        amount: 5, // $50 USD
         description: 'Sample expense - Delete me!',
         category: 'Food & Dining',
         date: new Date(),
