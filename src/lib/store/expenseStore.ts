@@ -29,7 +29,7 @@ if (typeof window !== 'undefined') {
       // First time user - create a dummy expense to prime the reactive system
       const dummyExpense: Expense = {
         id: crypto.randomUUID(),
-        amount: 5, // $50 USD
+        amount: 50, // $50 USD
         description: 'Sample expense - Delete me!',
         category: 'Food & Dining',
         date: new Date(),
@@ -98,6 +98,25 @@ export function addExpense(expense: Omit<Expense, 'id' | 'createdAt'>) {
 
 export function deleteExpense(id: string) {
   expenses.update(current => current.filter(e => e.id !== id));
+}
+
+// Category management
+export function addCategory(category: Omit<Category, 'id'> & { id?: string }) {
+  const newCategory: Category = {
+    ...category,
+    id: category.id || crypto.randomUUID()
+  };
+  categories.update(current => [...current, newCategory]);
+}
+
+export function updateCategory(id: string, updates: Partial<Category>) {
+  categories.update(current => 
+    current.map(cat => cat.id === id ? { ...cat, ...updates } : cat)
+  );
+}
+
+export function deleteCategory(id: string) {
+  categories.update(current => current.filter(cat => cat.id !== id));
 }
 
 // Derived stores

@@ -1,19 +1,18 @@
 <script lang="ts">
-  import { onMount } from 'svelte';
   import { fade } from 'svelte/transition';
   import { X, Download, Smartphone, Share2, Plus, Check, Loader2, Zap, WifiOff, Bell, ChevronDown } from '@lucide/svelte';
   
-  export let showDelay = 3000;
-  export let autoClose = true;
+
+  let { showDelay = 3000, autoClose = true} = $props()
   
   // State
-  let deferredPrompt: any = null;
-  let showInstallPrompt = false;
-  let isIOS = false;
-  let isStandalone = false;
-  let isAndroid = false;
-  let showInstructions = false;
-  let installationStatus: 'idle' | 'installing' | 'success' | 'error' = 'idle';
+  let deferredPrompt = $state<any>(null);
+  let showInstallPrompt = $state(false);
+  let isIOS = $state(false);
+  let isStandalone = $state(false);
+  let isAndroid = $state(false);
+  let showInstructions = $state(false);
+  let installationStatus = $state<'idle' | 'installing' | 'success' | 'error'>('idle');
   
   // Detect platform
   const detectPlatform = () => {
@@ -90,7 +89,9 @@
   };
 
   // Initialize
-  onMount(() => {
+  $effect.pre(() => {
+    if (typeof window === 'undefined') return;
+    
     detectPlatform();
     
     if (!isStandalone && shouldShowPrompt()) {

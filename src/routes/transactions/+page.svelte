@@ -4,7 +4,6 @@
   import ExpenseList from "$lib/components/ExpenseList.svelte";
   import ExportButton from "$lib/components/Export.svelte";
   import { Button } from "$lib/components/ui/button";
-  import { Input } from "$lib/components/ui/input";
   import { expenses, categories } from "$lib/store/expenseStore";
   import { currencyConfig } from "$lib/store/currencyStore";
   import { formatCurrencyReactive } from "$lib/utils/format";
@@ -21,15 +20,15 @@
   } from "@lucide/svelte";
   
   // Pagination state
-  let currentPage = 1;
-  let itemsPerPage = 20;
-  let searchTerm = "";
-  let selectedCategory = "all";
-  let sortBy: 'date' | 'amount' | 'category' = 'date';
-  let sortOrder: 'asc' | 'desc' = 'desc';
+  let currentPage = $state(1);
+  let itemsPerPage = $state(20);
+  let searchTerm = $state("");
+  let selectedCategory = $state("all");
+  let sortBy = $state<'date' | 'amount' | 'category'>('date');
+  let sortOrder = $state<'asc' | 'desc'>('desc');
   
   // Filter and sort expenses
-  $: filteredExpenses = $expenses
+  let filteredExpenses = $derived($expenses
     .filter(expense => {
       // Search filter
       if (searchTerm && !expense.description.toLowerCase().includes(searchTerm.toLowerCase())) {
@@ -51,22 +50,26 @@
         comparison = a.category.localeCompare(b.category);
       }
       return sortOrder === 'desc' ? -comparison : comparison;
-    });
-  
+    })
+  );  
   // Pagination calculations
-  $: totalPages = Math.ceil(filteredExpenses.length / itemsPerPage);
-  $: paginatedExpenses = filteredExpenses.slice(
+  let totalPages = $derived(Math.ceil(filteredExpenses.length / itemsPerPage));
+  let paginatedExpenses = $derived(filteredExpenses.slice(
     (currentPage - 1) * itemsPerPage,
     currentPage * itemsPerPage
-  );
+  ));
   
   // Reset to first page when filters change
-  $: {
+  $effect(() => {
+    searchTerm;
+    selectedCategory;
+    sortBy;
+    sortOrder;
     currentPage = 1;
-  }
+  });
   
   // Calculate totals
-  $: displayedTotal = filteredExpenses.reduce((sum, e) => sum + e.amount, 0);
+  let displayedTotal = $derived(filteredExpenses.reduce((sum, e) => sum + e.amount, 0));
   
   // Toggle sort order
   function toggleSort(field: 'date' | 'amount' | 'category') {
@@ -105,17 +108,21 @@
       <!-- Search -->
       <div class="relative">
         <Search class="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground" />
-        <Input
+        <input
+          type="text"
           placeholder="Search descriptions..."
-          class="pl-9"
-          bind:value={searchTerm}
+          class="pl-9 w-full h-10 px-3 rounded-md border border-input bg-background text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+          value={searchTerm}
+          oninput={(e) => { searchTerm = e.currentTarget.value; }}
+          onchange={(e) => { searchTerm = e.currentTarget.value; }}
         />
       </div>
       
       <!-- Category Filter - Native Select -->
       <div class="relative">
         <select 
-          bind:value={selectedCategory}
+          value={selectedCategory}
+          onchange={(e) => { selectedCategory = e.currentTarget.value; }}
           class="w-full h-10 px-3 rounded-md border border-input bg-background text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
         >
           <option value="all">All Categories</option>
@@ -128,7 +135,8 @@
       <!-- Sort By - Native Select -->
       <div class="relative">
         <select 
-          bind:value={sortBy}
+          value={sortBy}
+          onchange={(e) => { sortBy = e.currentTarget.value as 'date' | 'amount' | 'category'; }}
           class="w-full h-10 px-3 rounded-md border border-input bg-background text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
         >
           <option value="date">Sort by Date</option>
@@ -140,7 +148,8 @@
       <!-- Sort Order - Native Select -->
       <div class="relative">
         <select 
-          bind:value={sortOrder}
+          value={sortOrder}
+          onchange={(e) => { sortOrder = e.currentTarget.value as 'asc' | 'desc'; }}
           class="w-full h-10 px-3 rounded-md border border-input bg-background text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
         >
           <option value="desc">Descending (Newest first)</option>

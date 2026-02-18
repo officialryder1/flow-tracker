@@ -15,13 +15,11 @@
 
   
   // New prop to limit the number of transactions shown
-  export let limit: number | null = null;
-  export let expenses: any[] | null = null; // Allow external expenses array
-  export let hideTitle: boolean = false;  
+  let { limit=null, expenses=null, hideTitle=false } = $props();
   
   // If limit is set, show only that many, otherwise show all
-  $: sourceExpenses = expenses || $storeExpenses;
-  $: displayedExpenses = limit ? sourceExpenses.slice(0, limit) : sourceExpenses;
+  let sourceExpenses = $derived(expenses || $storeExpenses);
+  let displayedExpenses = $derived(limit ? sourceExpenses.slice(0, limit) : sourceExpenses);
 </script>
 
 <div class="space-y-4">
@@ -29,11 +27,6 @@
     <h2 class="text-2xl font-bold">
       {limit ? 'Recent Transactions' : 'All Transactions'}
     </h2>
-  {/if}
-
-  {#if !limit}
-    <!-- Only show title on full page -->
-    <h2 class="text-2xl font-bold">All Transactions</h2>
   {/if}
   
  <div class="rounded-md border">

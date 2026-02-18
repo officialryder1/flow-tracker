@@ -1,5 +1,6 @@
 <script lang="ts">
   import ExportButton from "$lib/components/Export.svelte";
+  import ImportButton from "$lib/components/ImportButton.svelte";
   import SpendingChart from "$lib/components/analytics/SpendingChart.svelte";
   import CategoryBreakdown from "$lib/components/analytics/CategoryBreakdown.svelte";
   import InsightsCard from "$lib/components/analytics/InsightsCard.svelte";
@@ -105,6 +106,7 @@
       </button>
       
       <ExportButton filename="flow-analytics" />
+      <ImportButton />
     </div>
   </div>
   

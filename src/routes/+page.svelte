@@ -11,7 +11,7 @@
   import ChartGrid from "$lib/components/analytics/ChartGrid.svelte";
 
  
-  let activeTab = "overview";
+  let activeTab = $state("overview");
 </script>
 
 <div class="container mx-auto px-4 sm:px-6 py-4 sm:py-8 max-w-7xl">

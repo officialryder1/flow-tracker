@@ -4,11 +4,11 @@
   import { expenses, categories } from '$lib/store/expenseStore';
   import { currencyConfig } from '$lib/store/currencyStore';
   
-  let canvas: HTMLCanvasElement;
+  let canvas: HTMLCanvasElement = $state()
   let chart: Chart;
   
-  $: categoryData = processCategoryData();
-  $: currentCurrency = $currencyConfig;
+  let categoryData = $derived(processCategoryData());
+  let currentCurrency = $derived($currencyConfig);
   
   function processCategoryData() {
     const byCategory = $expenses.reduce((acc, e) => {
@@ -108,11 +108,11 @@
     };
   });
   
-  $: {
+  $effect(() => {
     if (canvas) {
       createChart();
     }
-  }
+  })
 </script>
 
 <div class="w-full h-80 relative">

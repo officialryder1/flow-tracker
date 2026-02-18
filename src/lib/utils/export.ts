@@ -1,37 +1,57 @@
 import type { Expense, Category } from '$lib/types';
 import { formatCurrency, formatDate } from './format';
+import { get } from 'svelte/store';
+import { categories } from '$lib/store/expenseStore';
 
-// Convert expenses to CSV format
-export function expensesToCSV(expenses: Expense[], categories: Category[]): string {
-  // Create category map for quick lookup
-  const categoryMap = new Map(categories.map(c => [c.name, c]));
-  
-  // Define CSV headers
+
+// Convert expenses and categories to CSV
+export function expensesToCSV(expenses: Expense[], includeCategories: boolean = true): string {
+  // Create CSV headers
   const headers = ['Date', 'Description', 'Category', 'Amount (USD)', 'Amount (NGN)', 'Created At'];
   
   // Convert expenses to rows
   const rows = expenses.map(expense => {
-    const category = categoryMap.get(expense.category);
-    const amountInUSD = expense.amount;
-    const amountInNGN = amountInUSD * 1500; // Using exchange rate 1 USD = 1500 NGN
+    const amountInNGN = expense.amount * 1500;
     
     return [
       formatDate(expense.date),
       expense.description,
       expense.category,
-      amountInUSD.toFixed(2),
+      expense.amount.toFixed(2),
       amountInNGN.toFixed(0),
       formatDate(expense.createdAt)
     ];
   });
   
-  // Combine headers and rows
-  const csvContent = [
-    headers.join(','),
-    ...rows.map(row => row.map(cell => `"${cell}"`).join(','))
-  ].join('\n');
+  let csv = [headers.join(','), ...rows.map(row => row.map(cell => `"${cell}"`).join(','))].join('\n');
   
-  return csvContent;
+  // Add categories section if requested
+  if (includeCategories) {
+    const cats = get(categories);
+    csv += '\n\n# Categories\n';
+    csv += ['Name', 'Color', 'Budget', 'Icon'].join(',') + '\n';
+    csv += cats.map(cat => 
+      `"${cat.name}","${cat.color}","${cat.budget || ''}","${cat.icon}"`
+    ).join('\n');
+  }
+  
+  return csv;
+}
+
+// Export to JSON (includes all data)
+export function expensesToJSON(expenses: Expense[], categories: Category[]): string {
+  const data = {
+    version: '1.0',
+    exportedAt: new Date().toISOString(),
+    expenses: expenses.map(e => ({
+      ...e,
+      date: e.date.toISOString(),
+      createdAt: e.createdAt.toISOString()
+    })),
+    categories: categories
+  };
+  
+  return JSON.stringify(data, null, 2);
 }
 
 // Download file

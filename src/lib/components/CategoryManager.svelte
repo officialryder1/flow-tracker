@@ -1,5 +1,6 @@
 <script lang="ts">
   import { categories } from "$lib/store/expenseStore";
+  import { addCategory, updateCategory, deleteCategory } from "$lib/store/expenseStore";
   import { Button } from "$lib/components/ui/button";
   import { Input } from "$lib/components/ui/input";
   import { Label } from "$lib/components/ui/label";
@@ -14,12 +15,12 @@
   } from "$lib/components/ui/dialog";
   import { Pencil, Trash2, Plus } from "@lucide/svelte";
   
-  let showAddDialog = false;
-  let showEditDialog = false;
-  let editingCategory: any = null;
-  let categoryName = "";
-  let categoryColor = "#FF6B6B";
-  let categoryBudget = "";
+  let showAddDialog = $state(false);
+  let showEditDialog = $state(false);
+  let editingCategory = $state<any>(null);
+  let categoryName = $state("");
+  let categoryColor = $state("#FF6B6B");
+  let categoryBudget = $state("");
   
   function resetForm() {
     categoryName = "";
@@ -68,7 +69,7 @@
     
     <!-- Add Category Dialog - FIXED: Button is outside DialogTrigger -->
     <Dialog bind:open={showAddDialog}>
-      <DialogTrigger asChild>
+      <DialogTrigger>
         <!-- This button is the trigger - no nested buttons -->
         <Button onclick={() => resetForm()}>
           <Plus class="h-4 w-4 mr-2" />
@@ -96,18 +97,24 @@
           <div class="space-y-2">
             <Label for="add-category-color">Color</Label>
             <div class="flex gap-2">
-              <Input 
-                id="add-category-color-picker"
-                type="color" 
-                bind:value={categoryColor}
-                class="w-20"
-              />
-              <Input 
-                id="add-category-color-hex"
-                value={categoryColor}
-                on:input={(e) => categoryColor = e.currentTarget.value}
-                placeholder="#000000"
-              />
+              <div class="flex gap-2">
+                <input 
+                  id="add-category-color-picker"
+                  type="color" 
+                  value={categoryColor}
+                  onchange={(e) => { categoryColor = e.currentTarget.value; }}
+                  class="w-20 h-10 cursor-pointer rounded-md border border-input"
+                />
+                <input 
+                  id="add-category-color-hex"
+                  type="text"
+                  value={categoryColor}
+                  oninput={(e) => { categoryColor = e.currentTarget.value; }}
+                  onchange={(e) => { categoryColor = e.currentTarget.value; }}
+                  placeholder="#000000"
+                  class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-base ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                />
+              </div>
             </div>
           </div>
           
@@ -157,17 +164,21 @@
           <div class="space-y-2">
             <Label for="edit-category-color">Color</Label>
             <div class="flex gap-2">
-              <Input 
+              <input 
                 id="edit-category-color-picker"
                 type="color" 
-                bind:value={categoryColor}
-                class="w-20"
-              />
-              <Input 
-                id="edit-category-color-hex"
                 value={categoryColor}
-                on:input={(e) => categoryColor = e.currentTarget.value}
+                onchange={(e) => { categoryColor = e.currentTarget.value; }}
+                class="w-20 h-10 cursor-pointer rounded-md border border-input"
+              />
+              <input 
+                id="edit-category-color-hex"
+                type="text"
+                value={categoryColor}
+                oninput={(e) => { categoryColor = e.currentTarget.value; }}
+                onchange={(e) => { categoryColor = e.currentTarget.value; }}
                 placeholder="#000000"
+                class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-base ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
               />
             </div>
           </div>

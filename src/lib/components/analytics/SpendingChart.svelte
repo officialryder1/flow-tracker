@@ -7,7 +7,7 @@
   // Use $props for Svelte 5
   let { period = 'month' }: { period: 'week' | 'month' | 'year' } = $props();
   
-  let canvas = $state(HTMLCanvasElement)
+  let canvas: HTMLCanvasElement = $state();
   let chart: Chart;
   
   // Use $derived for computed values in Svelte 5
