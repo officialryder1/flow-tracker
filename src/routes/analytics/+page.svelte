@@ -104,8 +104,7 @@
       >
         <RefreshCw class={`w-4 h-4 ${isRefreshing ? 'animate-spin' : ''}`} />
       </button>
-      
-      <ExportButton filename="flow-analytics" />
+  
       <ImportButton />
     </div>
   </div>

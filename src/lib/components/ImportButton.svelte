@@ -1,5 +1,7 @@
 <script lang="ts">
   import { Button } from "$lib/components/ui/button";
+  import { expenses, categories } from "$lib/store/expenseStore";
+    import { expensesToCSV, expensesToJSON, downloadFile } from "$lib/utils/export";
   import {
     Dialog,
     DialogContent,
@@ -113,6 +115,32 @@
     isImporting = false;
     dragActive = false;
   }
+
+  let isExporting = false
+  let filename = "flow-analytics"
+
+  function handleExport(format: 'csv' | 'json') {
+    isExporting = true;
+    
+    try {
+      const currentExpenses = $expenses;
+      const currentCategories = $categories;
+      
+      if (format === 'csv') {
+        const csv = expensesToCSV(currentExpenses, true);
+        downloadFile(csv, `${filename}-${new Date().toISOString().split('T')[0]}.csv`, 'text/csv');
+        toast.success(`Exported ${currentExpenses.length} transactions to CSV`);
+      } else {
+        const json = expensesToJSON(currentExpenses, currentCategories);
+        downloadFile(json, `${filename}-${new Date().toISOString().split('T')[0]}.json`, 'application/json');
+        toast.success(`Exported ${currentExpenses.length} transactions to JSON`);
+      }
+    } catch (error) {
+      toast.error('Export failed');
+    } finally {
+      isExporting = false;
+    }
+  }
 </script>
 
 <Dialog bind:open={showImportDialog} onclose={resetDialog}>
@@ -129,12 +157,12 @@
       <DropdownMenuSeparator />
       
       <!-- Export Options -->
-      <DropdownMenuItem onclick={() => console.log('export csv')} class="cursor-pointer">
+      <DropdownMenuItem onclick={() => handleExport('csv')} class="cursor-pointer">
         <FileUp class="w-4 h-4 mr-2" />
         Export as CSV
       </DropdownMenuItem>
       
-      <DropdownMenuItem onclick={() => console.log('export json')} class="cursor-pointer">
+      <DropdownMenuItem onclick={() => handleExport('json')} class="cursor-pointer">
         <FileUp class="w-4 h-4 mr-2" />
         Export as JSON
       </DropdownMenuItem>
